@@ -17,14 +17,14 @@ const mapStateToProps = state => {
   if (state.todo.loading) {
     statusMessage = "Todos Loading...";
   } else if (state.todo.error) {
-    statusMessage = state.todo.error.response.statusText;
+    statusMessage = state.todo.error.response.data.statusMessage;
   } else {
     statusMessage = null;
   }
 
   return {
     todoList: state.todo.todos,
-    totalData: !state.todo.loading
+    totalData: (!state.todo.loading && !state.todo.error)
       ? state.todo.metadata.totalData.fulfillmentValue
       : "",
     fetchingStatus: statusMessage
@@ -36,7 +36,7 @@ const mapDispatchToProps = dispatch => {
     fetchTodos: async (page = 1, perpage, searchQuery = "") => {
 
       dispatch(fetchTodosBegin());
-      response = await fetchTodos("get", page, perpage, searchQuery);
+      response = await fetchTodos(page, perpage, searchQuery);
 
       if (response.status === 200) {
         dispatch(
